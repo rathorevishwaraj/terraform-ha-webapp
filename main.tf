@@ -44,12 +44,13 @@ resource "aws_security_group" "webSg" {
   vpc_id = aws_vpc.myvpc.id
 
   ingress {
-    description = "HTTP from VPC"
+    description = "HTTP"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   ingress {
     description = "SSH"
     from_port   = 22
@@ -74,13 +75,21 @@ resource "aws_s3_bucket" "web-bucket" {
   bucket = "vishwaeterra2025"
 }
 
-
 resource "aws_instance" "webserver1" {
   ami                    = "ami-0a1235697f4afa8a4"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.webSg.id]
   subnet_id              = aws_subnet.sub1.id
-  user_data              = base64encode(file("userdata.sh"))
+
+  user_data = base64encode(<<EOF
+#!/bin/bash
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+echo "Hello from Webserver1" > /var/www/html/index.html
+EOF
+  )
 }
 
 resource "aws_instance" "webserver2" {
@@ -88,17 +97,24 @@ resource "aws_instance" "webserver2" {
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.webSg.id]
   subnet_id              = aws_subnet.sub2.id
-  user_data              = base64encode(file("userdata1.sh"))
+
+  user_data = base64encode(<<EOF
+#!/bin/bash
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+echo "Hello from Webserver2" > /var/www/html/index.html
+EOF
+  )
 }
 
-#create alb
 resource "aws_lb" "myalb" {
   name               = "myalb"
   internal           = false
   load_balancer_type = "application"
-
-  security_groups = [aws_security_group.webSg.id]
-  subnets         = [aws_subnet.sub1.id, aws_subnet.sub2.id]
+  security_groups    = [aws_security_group.webSg.id]
+  subnets            = [aws_subnet.sub1.id, aws_subnet.sub2.id]
 
   tags = {
     Name = "web"
