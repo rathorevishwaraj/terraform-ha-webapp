@@ -76,7 +76,7 @@ resource "aws_s3_bucket" "web-bucket" {
 
 
 resource "aws_instance" "webserver1" {
-  ami                    = "ami-0261755bbcb8c4a84"
+  ami                    = "ami-0a1235697f4afa8a4"
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.webSg.id]
   subnet_id              = aws_subnet.sub1.id
