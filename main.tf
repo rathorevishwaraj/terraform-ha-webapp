@@ -70,7 +70,7 @@ resource "aws_security_group" "webSg" {
   }
 }
 
-resource "aws_s3_bucket" "example" {
+resource "aws_s3_bucket" "web-bucket" {
   bucket = "vishwaeterra2025"
 }
 
