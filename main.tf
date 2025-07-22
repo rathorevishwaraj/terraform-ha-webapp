@@ -80,16 +80,6 @@ resource "aws_instance" "webserver1" {
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.webSg.id]
   subnet_id              = aws_subnet.sub1.id
-
-  user_data = base64encode(<<EOF
-#!/bin/bash
-yum update -y
-yum install -y httpd
-systemctl start httpd
-systemctl enable httpd
-echo "Hello from Webserver1" > /var/www/html/index.html
-EOF
-  )
 }
 
 resource "aws_instance" "webserver2" {
@@ -97,16 +87,6 @@ resource "aws_instance" "webserver2" {
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.webSg.id]
   subnet_id              = aws_subnet.sub2.id
-
-  user_data = base64encode(<<EOF
-#!/bin/bash
-yum update -y
-yum install -y httpd
-systemctl start httpd
-systemctl enable httpd
-echo "Hello from Webserver2" > /var/www/html/index.html
-EOF
-  )
 }
 
 resource "aws_lb" "myalb" {
